@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* Tailwind CSS custom class to hide the scrollbar */
+.scrollbar-hidden::-webkit-scrollbar {
+	display: none;
+}
+
+.scrollbar-hidden {
+	-ms-overflow-style: none; /* For IE and Edge */
+	scrollbar-width: none; /* For Firefox */
+}
