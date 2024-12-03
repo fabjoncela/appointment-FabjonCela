@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import api from "../../../utils/axios";
+import { useSelector } from "react-redux";
 
 function StrictModeDroppable(props) {
   const [enabled, setEnabled] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const animation = requestAnimationFrame(() => setEnabled(true));
@@ -39,7 +41,7 @@ function KanbanBoard() {
 	  // Fetch appointments for the provider
 	  async function fetchAppointments() {
 		try {
-		  const response = await api.get("/appointments/provider/1"); // replace with dynamic provider ID
+		  const response = await api.get(`/appointments/provider/${user.id}`); // replace with dynamic provider ID
 		  const groupedAppointments = response.data;
   
 		  // Map the response to the columns state
