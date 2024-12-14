@@ -1,19 +1,24 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-useEffect(() => {
-    if (localStorage.getItem('token')) {
-    const role = localStorage.getItem('role');
-    if (role === 'customer') {
-      navigate('/customer');
-    } else {
-      navigate('/provider');
+  const { user, token } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (token) {
+      if (user.role === 'customer') {
+        navigate('/customer');
+      } else if (user.role == 'admin') {
+        navigate('/admin');
+      }
+      else {
+        navigate('/provider');
+      }
     }
-  }
-}, [])
+  }, [token, user, navigate])
 
 
   return (

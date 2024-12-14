@@ -13,6 +13,8 @@ import ProviderService from "./pages/provider/ProviderService";
 import MyBookings from "./pages/customer/MyBookings";
 import BookingPage from "./pages/customer/BookingPage";
 import ProviderDetails from "./pages/customer/ProviderDetails";
+import AdminRoute from "./components/AdminRoute";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
 	return (
@@ -25,12 +27,15 @@ function App() {
 							<Route path='/' element={<LandingPage />} />
 							<Route path='/login' element={<Login />} />
 							<Route path='/register' element={<Register />} />
+
 							<Route path="/customer/*" element={<CustomerRoute />}>
-    							<Route path="" element={<CustomerDashboard />} />
-							    <Route path="bookings" element={<MyBookings />} />
-    							<Route path="services/:serviceId/book" element={<BookingPage />} />
-    							<Route path="providers/:providerId" element={<ProviderDetails />} />
-  							</Route>
+								<Route path="" element={<CustomerDashboard />} />
+								<Route path="bookings" element={<MyBookings />} />
+								<Route path="services/:serviceId/book" element={<BookingPage />} />
+								<Route path="providers/:providerId" element={<ProviderDetails />} />
+							</Route>
+
+
 							<Route
 								path='/provider'
 								element={
@@ -47,6 +52,19 @@ function App() {
 									</ProviderRoute>
 								}
 							/>
+
+
+							<Route
+								path='/admin'
+								element={
+									<AdminRoute>
+										<AdminDashboard />
+									</AdminRoute>
+								}
+							/>
+
+
+
 							<Route path='*' element={<Navigate to='/' />} />
 						</Routes>
 					</main>

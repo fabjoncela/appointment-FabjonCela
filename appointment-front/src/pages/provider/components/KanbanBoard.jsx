@@ -43,7 +43,7 @@ function KanbanBoard() {
 		// Fetch appointments for the provider
 		async function fetchAppointments() {
 			try {
-				const response = await api.get(`/appointments/provider/${user.id}`); // replace with dynamic provider ID
+				const response = await api.get(`/appointments/provider/${user.id}`);
 				console.log(user);
 
 

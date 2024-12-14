@@ -15,11 +15,22 @@ function Login() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { user, token } = useSelector((state) => state.auth);
-
 	useEffect(() => {
 		if (token && user) {
-			const path = user.role === "customer" ? "/customer" : "/provider";
-			navigate(path);
+			switch (user?.role) {
+				case "admin":
+					navigate("/admin");
+					break;
+				case "customer":
+					navigate("/customer");
+					break;
+				case "provider":
+					navigate("/provider");
+					break;
+				default:
+					console.error("Unknown user role:", user.role);
+					navigate("/"); // Redirect to a safe fallback route
+			}
 		}
 	}, [user, token, navigate]);
 
@@ -74,7 +85,7 @@ function Login() {
 						autoComplete='current-password'
 						{...register("password", {
 							required: "Password is required",
-							
+
 						})}
 						className='w-full px-4 py-2 text-gray-100 bg-gray-700 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
 					/>
@@ -88,9 +99,8 @@ function Login() {
 				<button
 					type='submit'
 					disabled={isSubmitting}
-					className={`w-full py-2 text-lg font-semibold text-gray-100 bg-blue-600 rounded-lg transition duration-300 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500 ${
-						isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-					}`}
+					className={`w-full py-2 text-lg font-semibold text-gray-100 bg-blue-600 rounded-lg transition duration-300 hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+						}`}
 				>
 					{isSubmitting ? "Loading..." : "Login"}
 				</button>
