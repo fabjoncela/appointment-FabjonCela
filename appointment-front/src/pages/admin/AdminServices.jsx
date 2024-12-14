@@ -70,84 +70,92 @@ function AdminServices() {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-semibold mb-4">Manage Services</h1>
+        <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+            <h1 className="text-3xl text-center font-semibold text-indigo-600 mb-6">Manage Services</h1>
 
             {/* Edit Form (Visible when editing a service) */}
             {isEditing && (
-                <form onSubmit={handleUpdate} className="mb-4">
-                    <div className="mb-2">
-                        <label className="block text-sm font-semibold">Service Title</label>
+                <form onSubmit={handleUpdate} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700">Service Title</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="border rounded px-4 py-2 w-full"
+                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
-                    <div className="mb-2">
-                        <label className="block text-sm font-semibold">Description</label>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700">Description</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="border rounded px-4 py-2 w-full"
+                            className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-                        Update Service
-                    </button>
-                    <button
-                        type="button"
-                        onClick={resetForm}
-                        className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
-                    >
-                        Cancel
-                    </button>
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            type="submit"
+                            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            Update Service
+                        </button>
+                        <button
+                            type="button"
+                            onClick={resetForm}
+                            className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             )}
 
             {/* Services Table */}
-            <table className="min-w-full table-auto">
-                <thead>
-                    <tr>
-                        <th className="border-b px-4 py-2">ID</th>
-                        <th className="border-b px-4 py-2">Provider Name</th>
-                        <th className="border-b px-4 py-2">Title</th>
-                        <th className="border-b px-4 py-2">Description</th>
-                        <th className="border-b px-4 py-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {services.map((service) => (
-                        <tr key={service.id}>
-                            <td className="border-b px-4 py-2">{service.id}</td>
-                            <td className="border-b px-4 py-2">
-                                {providers[service.provider_id] || "Loading..."}
-                            </td>
-                            <td className="border-b px-4 py-2">{service.title}</td>
-                            <td className="border-b px-4 py-2">{service.description}</td>
-                            <td className="border-b px-4 py-2">
-                                <button
-                                    onClick={() => handleEdit(service)}
-                                    className="text-yellow-500 hover:text-yellow-700 mr-2"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(service.id)}
-                                    className="text-red-500 hover:text-red-700"
-                                >
-                                    Delete
-                                </button>
-                            </td>
+            <div className="mt-8 bg-white rounded-lg shadow-md">
+                <table className="min-w-full table-auto text-left">
+                    <thead className="bg-indigo-100">
+                        <tr>
+                            <th className="px-6 py-4 text-sm font-semibold text-indigo-700">ID</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-indigo-700">Provider Name</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-indigo-700">Title</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-indigo-700">Description</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-indigo-700">Actions</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {services.map((service) => (
+                            <tr key={service.id} className="hover:bg-gray-50">
+                                <td className="border-t px-6 py-4">{service.id}</td>
+                                <td className="border-t px-6 py-4">{providers[service.provider_id] || "Loading..."}</td>
+                                <td className="border-t px-6 py-4">{service.title}</td>
+                                <td className="border-t px-6 py-4">{service.description}</td>
+                                <td className="border-t px-6 py-4 flex space-x-3">
+                                    <button
+                                        onClick={() => handleEdit(service)}
+                                        className="bg-sky-500 text-white px-4 py-2 rounded-3xl hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(service.id)}
+                                        className="bg-red-500 text-white px-4 py-2 rounded-3xl hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
+
+
+
 }
 
 export default AdminServices;

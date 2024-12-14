@@ -9,6 +9,7 @@ function BookingPage() {
     const [time, setTime] = useState('');
     const [availableSlots, setAvailableSlots] = useState([]);
     const [generatedSlots, setGeneratedSlots] = useState([]);
+    const [showPopup, setShowPopup] = useState(false); // State for popup visibility
 
     useEffect(() => {
         const fetchServiceAndSlots = async () => {
@@ -29,19 +30,17 @@ function BookingPage() {
         };
 
         fetchServiceAndSlots();
-    }, [serviceId, date]); 
+    }, [serviceId, date]);
 
     const generateAvailableTimeSlots = () => {
         const slots = [];
 
-        // Generate time slots from 9:00 AM to 5:00 PM, in 30-minute increments
         for (let hour = 9; hour < 17; hour++) {
             const startTime = `${hour < 10 ? '0' + hour : hour}:00`;
-            const endTime = `${hour < 9 ? '0' + (hour + 1) : hour + 1}:00`;
+            const endTime = `${hour + 1 < 10 ? '0' + (hour + 1) : hour + 1}:00`;
             slots.push({ start_time: startTime, end_time: endTime });
         }
 
-        // Mark slots as unavailable if they conflict with existing appointments
         const updatedSlots = slots.map((slot) => {
             const isAvailable = !availableSlots.some(
                 (appointment) =>
@@ -56,9 +55,8 @@ function BookingPage() {
 
     const handleBooking = async () => {
         try {
-            const [startTime, endTime] = time.split('-'); // Split the selected time range into start and end times
+            const [startTime, endTime] = time.split('-');
 
-            // Sending the POST request to book the appointment
             await api.post('/appointments', {
                 date,
                 start_time: startTime,
@@ -66,7 +64,10 @@ function BookingPage() {
                 provider_id: service.provider_id,
                 service_id: serviceId
             });
-            alert('Booking successful!');
+
+            setShowPopup(true); // Show the popup on successful booking
+
+            setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
         } catch (error) {
             alert('Failed to book service.');
             console.log(error);
@@ -89,22 +90,22 @@ function BookingPage() {
                     <p className="text-lg text-gray-400">{service.description}</p>
                 </div>
             )}
-            
+
             <div className="mb-6">
                 <label className="block text-lg text-gray-300 mb-2">Select Date:</label>
                 <input
                     type="date"
                     value={date}
-                    onChange={(e) => setDate(e.target.value)} // Update date state
+                    onChange={(e) => setDate(e.target.value)}
                     className="w-full p-4 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
             </div>
-            
+
             <div className="mb-6">
                 <label className="block text-lg text-gray-300 mb-2">Select Time:</label>
                 <select
                     value={time}
-                    onChange={(e) => setTime(e.target.value)} // Update time state
+                    onChange={(e) => setTime(e.target.value)}
                     className="w-full p-4 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                     <option value="">Select Time</option>
@@ -115,13 +116,55 @@ function BookingPage() {
                     ))}
                 </select>
             </div>
-            
+
             <button
                 onClick={handleBooking}
                 className="w-full py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-400 transition"
             >
                 Confirm Booking
             </button>
+
+            {/* Popup for successful booking */}
+            {/* Popup for successful booking */}
+{showPopup && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-50">
+        <div className="relative bg-white text-gray-900 rounded-2xl p-8 shadow-xl w-11/12 max-w-md animate-fade-in">
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                <div className="w-16 h-16 flex items-center justify-center bg-green-500 rounded-full shadow-lg">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-10 w-10 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                        />
+                    </svg>
+                </div>
+            </div>
+            <h2 className="text-2xl font-extrabold text-center mt-6 text-gray-800">
+                Booking Successful!
+            </h2>
+            <p className="mt-4 text-center text-gray-600">
+                Your appointment has been successfully booked. We look forward to seeing you!
+            </p>
+            <div className="mt-6 flex justify-center">
+                <button
+                    onClick={() => setShowPopup(false)}
+                    className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-400 transition duration-300"
+                >
+                    Okay
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+
         </div>
     );
 }
