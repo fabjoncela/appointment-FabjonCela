@@ -93,13 +93,24 @@ function BookingPage() {
 
             <div className="mb-6">
                 <label className="block text-lg text-gray-300 mb-2">Select Date:</label>
-                <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div
+                    onClick={() => {
+                        const input = document.querySelector("#date-input");
+                        if (input) input.showPicker?.(); // Trigger the native date picker
+                        input?.focus(); // Ensure input is focused as a fallback
+                    }}
+                    className="w-full p-4 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus-within:ring-2 focus-within:ring-indigo-500 cursor-pointer"
+                >
+                    <input
+                        id="date-input"
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="w-full bg-transparent outline-none pointer-events-none"
+                    />
+                </div>
             </div>
+
 
             <div className="mb-6">
                 <label className="block text-lg text-gray-300 mb-2">Select Time:</label>
@@ -126,44 +137,44 @@ function BookingPage() {
 
             {/* Popup for successful booking */}
             {/* Popup for successful booking */}
-{showPopup && (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-50">
-        <div className="relative bg-white text-gray-900 rounded-2xl p-8 shadow-xl w-11/12 max-w-md animate-fade-in">
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-                <div className="w-16 h-16 flex items-center justify-center bg-green-500 rounded-full shadow-lg">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-10 w-10 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                        />
-                    </svg>
+            {showPopup && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-50">
+                    <div className="relative bg-white text-gray-900 rounded-2xl p-8 shadow-xl w-11/12 max-w-md animate-fade-in">
+                        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                            <div className="w-16 h-16 flex items-center justify-center bg-green-500 rounded-full shadow-lg">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-10 w-10 text-white"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-extrabold text-center mt-6 text-gray-800">
+                            Booking Successful!
+                        </h2>
+                        <p className="mt-4 text-center text-gray-600">
+                            Your appointment has been successfully booked. We look forward to seeing you!
+                        </p>
+                        <div className="mt-6 flex justify-center">
+                            <button
+                                onClick={() => setShowPopup(false)}
+                                className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-400 transition duration-300"
+                            >
+                                Okay
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <h2 className="text-2xl font-extrabold text-center mt-6 text-gray-800">
-                Booking Successful!
-            </h2>
-            <p className="mt-4 text-center text-gray-600">
-                Your appointment has been successfully booked. We look forward to seeing you!
-            </p>
-            <div className="mt-6 flex justify-center">
-                <button
-                    onClick={() => setShowPopup(false)}
-                    className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-400 transition duration-300"
-                >
-                    Okay
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+            )}
 
         </div>
     );
