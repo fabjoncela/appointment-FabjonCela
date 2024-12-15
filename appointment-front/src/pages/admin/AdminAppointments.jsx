@@ -6,8 +6,9 @@ function AdminAppointments() {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
     const [status, setStatus] = useState("request");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [appointmentToDelete, setAppointmentToDelete] = useState(null);
 
-    // Fetch all appointments on component mount
     useEffect(() => {
         api
             .get("/admin/appointments")
@@ -15,22 +16,18 @@ function AdminAppointments() {
             .catch((err) => console.log(err));
     }, []);
 
-    // Handle editing of appointment
     const handleEdit = (appointment) => {
         setIsEditing(true);
         setEditId(appointment.id);
-        setStatus(appointment.status); // Set status from the appointment
+        setStatus(appointment.status);
     };
 
-    // Handle updating of appointment status
     const handleUpdate = (e) => {
         e.preventDefault();
-
         const updatedAppointment = { status };
-
         api
             .put(`/admin/appointments/${editId}`, updatedAppointment)
-            .then((res) => {
+            .then(() => {
                 setAppointments(
                     appointments.map((appointment) =>
                         appointment.id === editId ? { ...appointment, ...updatedAppointment } : appointment
@@ -41,17 +38,24 @@ function AdminAppointments() {
             .catch((err) => console.log(err));
     };
 
-    // Handle deletion of appointment
-    const handleDelete = (id) => {
+    const confirmDelete = (id) => {
+        setAppointmentToDelete(id);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = () => {
+        if (!appointmentToDelete) return;
+
         api
-            .delete(`/admin/appointments/${id}`)
-            .then((res) => {
-                setAppointments(appointments.filter((appointment) => appointment.id !== id));
+            .delete(`/admin/appointments/${appointmentToDelete}`)
+            .then(() => {
+                setAppointments(appointments.filter((appointment) => appointment.id !== appointmentToDelete));
+                setIsModalOpen(false);
+                setAppointmentToDelete(null);
             })
             .catch((err) => console.log(err));
     };
 
-    // Reset form state after edit
     const resetForm = () => {
         setStatus("request");
         setIsEditing(false);
@@ -62,7 +66,6 @@ function AdminAppointments() {
         <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
             <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Manage Appointments</h1>
 
-            {/* Edit Form (Visible when editing an appointment) */}
             {isEditing && (
                 <form onSubmit={handleUpdate} className="mb-6 p-6 bg-white rounded-lg shadow-md">
                     <div className="mb-4">
@@ -95,7 +98,6 @@ function AdminAppointments() {
                 </form>
             )}
 
-            {/* Appointments Table */}
             <div className="overflow-x-auto bg-white rounded-lg shadow-md">
                 <table className="min-w-full table-auto text-sm text-left text-gray-600">
                     <thead className="bg-indigo-100">
@@ -141,7 +143,7 @@ function AdminAppointments() {
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(appointment.id)}
+                                        onClick={() => confirmDelete(appointment.id)}
                                         className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition ml-2"
                                     >
                                         Delete
@@ -152,6 +154,29 @@ function AdminAppointments() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Confirmation Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+                        <h2 className="text-xl font-semibold mb-4">Are you sure you want to delete?</h2>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

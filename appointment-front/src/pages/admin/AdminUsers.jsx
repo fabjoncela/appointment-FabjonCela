@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../utils/axios';
 import UserEditModal from './UserEditModal'; // Import the Modal
-//fab pls work
+
 function AdminUsers() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);  // Store selected user
-    const [isModalOpen, setIsModalOpen] = useState(false);  // Control modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);  // Control edit modal visibility
+    const [userToDelete, setUserToDelete] = useState(null);  // Store the user to delete
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Control delete modal visibility
 
     // Fetch users from API
     useEffect(() => {
@@ -19,13 +21,14 @@ function AdminUsers() {
             .then(res => {
                 console.log(res.data.message);
                 setUsers(users.filter(user => user.id !== id));
+                setIsDeleteModalOpen(false); // Close the delete modal after deleting
             })
             .catch(err => console.log(err));
     };
 
     const handleEdit = (user) => {
         setSelectedUser(user);
-        setIsModalOpen(true); // Open the modal
+        setIsModalOpen(true); // Open the edit modal
     };
 
     const handleSave = (updatedUser) => {
@@ -33,13 +36,22 @@ function AdminUsers() {
             .then(res => {
                 console.log(res.data.message);
                 setUsers(users.map(user => (user.id === selectedUser.id ? { ...user, ...updatedUser } : user)));
-                setIsModalOpen(false); // Close the modal after saving
+                setIsModalOpen(false); // Close the edit modal after saving
             })
             .catch(err => console.log(err));
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false); // Close the modal
+    const handleCloseEditModal = () => {
+        setIsModalOpen(false); // Close the edit modal
+    };
+
+    const handleDeleteConfirmation = (user) => {
+        setUserToDelete(user);
+        setIsDeleteModalOpen(true); // Open the delete modal
+    };
+
+    const handleCloseDeleteModal = () => {
+        setIsDeleteModalOpen(false); // Close the delete modal
     };
 
     return (
@@ -92,7 +104,7 @@ function AdminUsers() {
                                         </button>
                                         <button
                                             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-                                            onClick={() => handleDelete(user.id)}
+                                            onClick={() => handleDeleteConfirmation(user)}
                                         >
                                             Delete
                                         </button>
@@ -117,12 +129,34 @@ function AdminUsers() {
             <UserEditModal
                 user={selectedUser}
                 isOpen={isModalOpen}
-                onClose={handleCloseModal}
+                onClose={handleCloseEditModal}
                 onSave={handleSave}
             />
+
+            {/* Modal for Deleting User */}
+            {isDeleteModalOpen && userToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+                        <h2 className="text-xl font-semibold mb-4">Are you sure you want to delete?</h2>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={() => handleDelete(userToDelete.id)}
+                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={handleCloseDeleteModal}
+                                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-
 }
 
 export default AdminUsers;

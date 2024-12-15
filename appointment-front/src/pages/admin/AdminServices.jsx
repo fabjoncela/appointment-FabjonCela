@@ -3,25 +3,24 @@ import api from '../../utils/axios';
 
 function AdminServices() {
     const [services, setServices] = useState([]);
-    const [providers, setProviders] = useState({});  // Store provider names here
+    const [providers, setProviders] = useState({});
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [serviceToDelete, setServiceToDelete] = useState(null);
 
-    // Fetch all services on component mount
     useEffect(() => {
         api.get('/admin/services')
             .then(res => {
                 setServices(res.data);
-
-                // Fetch provider names for each service
                 const providerIds = res.data.map(service => service.provider_id);
-                const uniqueProviderIds = [...new Set(providerIds)]; // Remove duplicates
+                const uniqueProviderIds = [...new Set(providerIds)];
                 uniqueProviderIds.forEach(id => {
                     api.get(`/providers/${id}`).then(providerRes => {
-                        setProviders((prevProviders) => ({
-                            ...prevProviders,
+                        setProviders(prev => ({
+                            ...prev,
                             [id]: providerRes.data.name,
                         }));
                     }).catch(err => console.log(err));
@@ -30,7 +29,6 @@ function AdminServices() {
             .catch(err => console.log(err));
     }, []);
 
-    // Handle editing of service
     const handleEdit = (service) => {
         setIsEditing(true);
         setEditId(service.id);
@@ -38,30 +36,29 @@ function AdminServices() {
         setDescription(service.description);
     };
 
-    // Handle updating of service
     const handleUpdate = (e) => {
         e.preventDefault();
-
         const updatedService = { title, description };
-
         api.put(`/admin/services/${editId}`, updatedService)
-            .then(res => {
-                setServices(services.map(service => service.id === editId ? { ...service, ...updatedService } : service));
+            .then(() => {
+                setServices(services.map(service =>
+                    service.id === editId ? { ...service, ...updatedService } : service
+                ));
                 resetForm();
             })
             .catch(err => console.log(err));
     };
 
-    // Handle deletion of service
-    const handleDelete = (id) => {
-        api.delete(`/admin/services/${id}`)
-            .then(res => {
-                setServices(services.filter(service => service.id !== id));
+    const handleDelete = () => {
+        api.delete(`/admin/services/${serviceToDelete}`)
+            .then(() => {
+                setServices(services.filter(service => service.id !== serviceToDelete));
+                setIsModalOpen(false);
+                setServiceToDelete(null);
             })
             .catch(err => console.log(err));
     };
 
-    // Reset form state after edit
     const resetForm = () => {
         setTitle('');
         setDescription('');
@@ -69,11 +66,15 @@ function AdminServices() {
         setEditId(null);
     };
 
+    const openDeleteModal = (id) => {
+        setServiceToDelete(id);
+        setIsModalOpen(true);
+    };
+
     return (
         <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
             <h1 className="text-3xl text-center font-semibold text-indigo-600 mb-6">Manage Services</h1>
 
-            {/* Edit Form (Visible when editing a service) */}
             {isEditing && (
                 <form onSubmit={handleUpdate} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
                     <div>
@@ -113,7 +114,6 @@ function AdminServices() {
                 </form>
             )}
 
-            {/* Services Table */}
             <div className="mt-8 bg-white rounded-lg shadow-md">
                 <table className="min-w-full table-auto text-left">
                     <thead className="bg-indigo-100">
@@ -140,7 +140,7 @@ function AdminServices() {
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(service.id)}
+                                        onClick={() => openDeleteModal(service.id)}
                                         className="bg-red-500 text-white px-4 py-2 rounded-3xl hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
                                     >
                                         Delete
@@ -151,11 +151,30 @@ function AdminServices() {
                     </tbody>
                 </table>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+                        <h2 className="text-xl font-semibold mb-4">Are you sure you want to delete?</h2>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                onClick={handleDelete}
+                                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                            >
+                                Delete
+                            </button>
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-
-
-
 }
 
 export default AdminServices;
