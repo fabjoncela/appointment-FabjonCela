@@ -10,6 +10,8 @@ function CustomerDashboard() {
         const fetchServices = async () => {
             try {
                 const response = await api.get('/services');
+                console.log(response.data);
+                
                 setServices(response.data);
             } catch (error) {
                 console.error('Failed to fetch services:', error.message);
@@ -22,6 +24,10 @@ function CustomerDashboard() {
     const filteredServices = services.filter((service) =>
         service.title.toLowerCase().includes(search.toLowerCase())
     );
+    
+    // duke testuar filtered services
+    //console.log("Filtered Services:", filteredServices);
+    
 
     return (
         <div className="min-h-screen bg-gray-900 text-white p-8">

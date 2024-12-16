@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import api from '../../utils/axios';
 
 function BookingPage() {
+    const navigate = useNavigate();
     const { serviceId } = useParams();
     const [service, setService] = useState(null);
     const [date, setDate] = useState('');
@@ -67,7 +68,6 @@ function BookingPage() {
 
             setShowPopup(true); // Show the popup on successful booking
 
-            setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
         } catch (error) {
             alert('Failed to book service.');
             console.log(error);
@@ -78,8 +78,22 @@ function BookingPage() {
         <div className="min-h-screen bg-gray-900 text-white p-8">
             <Link
                 to={`/customer`}
-                className="mb-6 text-indigo-400 underline hover:text-indigo-500 transition"
+                className="mb-6 flex items-center justify-center w-36 py-2 bg-gray-800 text-white font-medium text-sm rounded-full shadow-md hover:bg-gray-700 hover:shadow-lg transition duration-300"
             >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 19l-7-7 7-7"
+                    />
+                </svg>
                 Go Back
             </Link>
             {service && (
@@ -135,7 +149,7 @@ function BookingPage() {
                 Confirm Booking
             </button>
 
-            {/* Popup for successful booking */}
+
             {/* Popup for successful booking */}
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-50">
@@ -164,12 +178,18 @@ function BookingPage() {
                         <p className="mt-4 text-center text-gray-600">
                             Your appointment has been successfully booked. We look forward to seeing you!
                         </p>
-                        <div className="mt-6 flex justify-center">
+                        <div className="mt-6 flex justify-between gap-4">
                             <button
-                                onClick={() => setShowPopup(false)}
-                                className="px-6 py-2 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-400 transition duration-300"
+                                onClick={() => navigate('/customer/bookings')}
+                                className="px-6 py-2 bg-indigo-500 text-white font-semibold rounded-full shadow-md hover:bg-indigo-400 transition duration-300 w-1/2"
                             >
-                                Okay
+                                View Bookings
+                            </button>
+                            <button
+                                onClick={() => navigate('/customer')}
+                                className="px-6 py-2 bg-gray-500 text-white font-semibold rounded-full shadow-md hover:bg-gray-400 transition duration-300 w-1/2"
+                            >
+                                Back to Dashboard
                             </button>
                         </div>
                     </div>
